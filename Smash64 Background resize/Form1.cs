@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
-using Emgu.CV;
-using Emgu.CV.Structure;
 
 namespace Smash64_Background_resize
 {
@@ -16,8 +10,8 @@ namespace Smash64_Background_resize
     public partial class Form1 : Form
     {
         string filePath;
-        Image<Bgr, byte> img1;
-        Image<Bgr, byte> img2;
+        Bitmap img1;
+        Bitmap img2;
         public Form1()
         {
             InitializeComponent();
@@ -28,22 +22,16 @@ namespace Smash64_Background_resize
             /* img2 is a 300x220 copy of the input image
              * img1 is 300x263, and will be the final image after rows are copied
              */
-            img1 = new Image<Bgr, byte>(filePath);
-            img2 = new Image<Bgr, byte>(300, 220);
+            img1 = new Bitmap(filePath);
+            img2 = new Bitmap(filePath);
 
-            // if resize input width to 220
+            // if resize input height to 220
             if (img1.Height == 263 && img1.Width == 300)
-            {
-                img2 = img1.Resize(300, 220, Emgu.CV.CvEnum.Inter.Nearest);
-            }
+                img2 = new Bitmap(img1, new Size(300, 263));
 
-            // for 220 width input, make a 263 width copy
+            // for 220 height input, make a 263 width copy
             else if (img1.Height == 220)
-            {
-                Size size1 = new Size(300, 263);
-                img2 = new Image<Bgr, byte>(filePath);
-                img1 = img2.Resize(300, 263, Emgu.CV.CvEnum.Inter.Nearest);
-            }
+                img1 = new Bitmap(img2, new Size(300, 263));
 
             // basic size check 
             else
@@ -52,8 +40,7 @@ namespace Smash64_Background_resize
                 result = MessageBox.Show("Invalid Image size, Supported sizes are 300x220 and 300x263", "Invalid Image", MessageBoxButtons.OK);
                 return;
             }
-
-            // copy first 6 rows, row 7 is a duplicate
+                        // copy first 6 rows, row 7 is a duplicate
             for (int i = 0; i < 7; i++)
                 copyRow(i, i);
             copyRow(6, 7);
@@ -79,7 +66,7 @@ namespace Smash64_Background_resize
             }
 
 
-            imageBox1.Image = img1;
+            pictureBox1.Image = img1;
 
         }
 
@@ -88,7 +75,7 @@ namespace Smash64_Background_resize
         {
             for (int i = 0; i < 300; i++)
             {
-                img1[rowDest, i] = img2[rowSource, i];
+                img1.SetPixel(i,rowDest, img2.GetPixel(i, rowSource)) ;
             }
         }
 
@@ -105,7 +92,7 @@ namespace Smash64_Background_resize
             {
                 txtFile.Text = openFileDialog1.FileName;
                 filePath = openFileDialog1.FileName;
-                imageBox1.Image = CvInvoke.Imread(filePath, Emgu.CV.CvEnum.ImreadModes.AnyColor);
+                pictureBox1.Image = new Bitmap(filePath);
             }
         }
 
@@ -118,11 +105,16 @@ namespace Smash64_Background_resize
 
             if(Dialog1.ShowDialog() ==DialogResult.OK)
             {
-                img1.Save(Dialog1.FileName);
+                img1.Save(Dialog1.FileName,ImageFormat.Png);
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void imageBox1_Click(object sender, EventArgs e)
         {
 
         }
