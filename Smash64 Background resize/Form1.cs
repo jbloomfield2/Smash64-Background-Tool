@@ -41,15 +41,15 @@ namespace Smash64_Background_resize
                 return;
             }
                         // copy first 6 rows, row 7 is a duplicate
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 6; i++)
                 copyRow(i, i);
-            copyRow(6, 7);
+            copyRow(5, 6);
 
             int count = 0;
             int row = 0;
 
             // from row 8, every 5th row is a duplicate
-            for (int i = 8;i <221; i++)
+            for (int i = 7;i <221; i++)
             {
                 if (i + row > 263)
                     break;
