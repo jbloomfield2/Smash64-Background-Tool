@@ -25,9 +25,19 @@ namespace Smash64_Background_resize
             img1 = new Bitmap(filePath);
             img2 = new Bitmap(filePath);
 
-            // if resize input height to 220
+            // if 263 height resize input height to 220
             if (img1.Height == 263 && img1.Width == 300)
-                img2 = new Bitmap(img1, new Size(300, 263));
+            {
+                img2 = new Bitmap(300, 220);
+                // squish down with nearest neighbor
+                using (Graphics g = Graphics.FromImage(img2))
+                {
+                    g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                    g.PixelOffsetMode = PixelOffsetMode.Half;
+                    g.DrawImage(img1, 0, 0, 300, 220);
+                }
+            }
+                
 
             // for 220 height input, make a 263 width copy
             else if (img1.Height == 220)
